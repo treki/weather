@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@500&display=swap" rel="stylesheet">
     <title>Weather App</title>
 </head>
 <body>
@@ -10,22 +13,27 @@
     <div id="app">
     <header id="header">
     <h1>{{header}}</h1>
+    <p>{{message}}</p>
     </header>
 
     <!--main-->
     <div id="main">
         <!--content-->
         <div class="search-box">
-            <h2>{{message}}</h2>
-            <input type="text" class="search-bar" placeholder="Search...">
+            <input type="text" 
+                   class="search-bar" 
+                   placeholder="Search..."
+                   v-model="query"
+                   v-on:keypress="fetchWeather">
+                   
         </div>
-        <div class="weather-wrap">
+        <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
             <div class="location-box">
-                <div class="location">Seattle, WA</div>
+                <div class="location"> {{weather.name}}, {{weather.sys.country}}</div>
                 <div class="date">Monday December 13 2021</div>
             </div>
             <div class="weather-box">
-                <div class="temp">34F</div>
+                <div class="temp">{{Math.round(weather.name.temp)}}</div>
                     <div class="weather">Rain</div>
             </div>
         </div>
@@ -42,10 +50,26 @@
             data(){
                 return {
                     api_key: '529414283cf9f88e7abffdf2e8221a80',
+                    url_base: 'https://api.openweathermap.org/data/2.5/',
+                    query:'',
+                    weather:{},
                     header: 'Weather',
-                    message: 'Your weather app'
+                    message: 'Wherever you go, no matter what the weather, always bring your own sunshine'
+                    }
+                },
+                methods: {
+                    fetchWeather(e){
+                        if(e.key =='Enter'){
+                            fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
+                            .then(res =>{
+                                return res.json();
+                            }).then(this.setResults);
+                        }
+                    },
+                    setResults(results) {
+                        this.weather = results;
+                    }
                 }
-            }
         }).mount('#app')
     </script>
     <style>
@@ -53,14 +77,14 @@
         *{
             margin:0px;
             padding: 0px;
-           
+            font-family: 'Source Sans 3', sans-serif;
             box-sizing: border-box;
         }
         body{
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
+             
         }
         #app{
-            background-image: url('imageWeather.jpeg');
+            background-image: url('pexels-josh-hild-2448749.jpg');
             background-position: bottom;
             background-size: cover;
             transition: 0.4s;
@@ -68,6 +92,8 @@
         #header{
             padding: 10px;
             text-align: center;
+            color:#FFF ;
+            text-shadow:0px 1px rgba(0,0,0,0.25) ;
             
         }
        
@@ -85,7 +111,7 @@
             width: 100%;
             padding: 5px;
 
-            color: #3a3939;
+            color: rgb(255, 255, 255);
             font-size: 15px;
 
             appearance: none;
@@ -100,7 +126,7 @@
         }
         .search-box .search-bar:focus {
             box-shadow: 0px 0px 16px rgba(0,0,0, 0.25);
-            background-color: rgba(0,0,0,0.45);
+            background-color: rgba(79, 79, 79, 0.45);
             border-radius:  5px;
         }
         .location-box .location{
@@ -113,7 +139,6 @@
         .location-box .date{
             color:#FFF ;
             font-size: 18px;
-            font-weight: 300;
             font-style: italic;
             text-align: center;
         }
@@ -121,7 +146,24 @@
             text-align: center;
         }
         .weather-box .temp {
-            
+            display: inline-block;
+            padding: 10px 25px;
+            color: #FFF;
+            font-size: 90px;
+
+            text-shadow: 3px 6px rgba(0,0,0,0.25);
+            background-color: rgba(191, 190, 190, 0.25);
+            border-radius: 10px;
+            margin: 25px 0px;
+
+            box-shadow: 3px 6px rgba(0,0,0,0.25);
+        }
+        .weather-box .weather{
+            color: #FFF;
+            font-size: 38px;
+            font-style: italic;
+            text-shadow: 3px 6px rgba(0,0,0,0.25);
+
         }
     </style>
 </body>
